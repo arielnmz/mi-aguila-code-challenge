@@ -1,10 +1,15 @@
-import csv
+import csv, requests
+
+from itertools import islice
 from pathlib import Path
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from django_api.forms import CsvUploadForm
+
+
+GEOCODE_CHUNK_SIZE = 10
 
 
 @csrf_exempt
@@ -22,18 +27,47 @@ def request_postcodes_from_csv(request):
             # Read back from the created file to process the CSV
             with Path("postcodes.csv").open("r") as f:
                 csv_reader = csv.reader(f)
-                _ = 0
+
                 # Skip head
                 next(csv_reader)
 
-                for row in csv_reader:
-                    lat, lon = row
-                    print(lat, lon)
+                # Process the contents of the CSV in chunks of GEOCODE_CHUNK_SIZE geolocations to improve efficiency
 
-                    _ += 1
-                    if _ > 9:
+                # First create a generator that returns chunks of GEOCODE_CHUNK_SIZE geolocations
+                def _geolocations_gen():
+                    rows = islice(csv_reader, GEOCODE_CHUNK_SIZE)
+                    yield [(lat, lon) for lat, lon in rows]
+
+                # Continuously take from the geolocations generator until the data source is exhausted
+                while True:
+                    geolocations = next(_geolocations_gen())
+
+                    # End loop if the geolocations source is exhausted
+                    if not geolocations:
                         break
 
-                return HttpResponse("Hello, world. You're at the polls index.")
+                    # Generate a request object to pass to the postcodes microservice
+                    payload = {
+                        "geolocations": [
+                            {"longitude": lon, "latitude": lat}
+                            for lat, lon in geolocations
+                        ]
+                    }
+
+                    result = requests.post(
+                        "http://localhost:8001/postcodes/reverse_geocode_postcodes_batch/",
+                        json=payload,
+                    )
+
+                    if result.ok:
+                        pass
+                    else:
+                        return HttpResponse(
+                            f"There were some errors during processing of the CSV. Code: {result.status_code}"
+                        )
+
+                return HttpResponse(
+                    "Process finished, you can see the results in the database"
+                )
 
     return HttpResponse("Bad request", status=400)

@@ -4,7 +4,7 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 --WebAppBoundary
 Content-Disposition: form-data; name="csv_file"; filename="postcodesgeo.csv"
 
-< ./postcodesgeo.csv
+< ./postcodesgeo.small.csv
 --WebAppBoundary--
 
 ###
