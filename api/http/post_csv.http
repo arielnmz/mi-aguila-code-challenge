@@ -1,0 +1,10 @@
+POST http://localhost:8000/api/request_postcodes_from_csv/
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="csv_file"; filename="postcodesgeo.csv"
+
+< ./postcodesgeo.csv
+--WebAppBoundary--
+
+###
