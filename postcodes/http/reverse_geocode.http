@@ -1,0 +1,17 @@
+POST http://localhost:8001/postcodes/reverse_geocode_postcodes_batch/
+Content-Type: application/json
+
+{
+  "geolocations": [
+    {
+      "longitude": 0.629834723775309,
+      "latitude": 51.7923246977375
+    },
+    {
+      "longitude": 99.99,
+      "latitude": -99.99
+    }
+  ]
+}
+
+###
