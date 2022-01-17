@@ -36,4 +36,4 @@ def request_postcodes_from_csv(request):
 
                 return HttpResponse("Hello, world. You're at the polls index.")
 
-    return HttpResponse("Bad request", code=400)
+    return HttpResponse("Bad request", status=400)

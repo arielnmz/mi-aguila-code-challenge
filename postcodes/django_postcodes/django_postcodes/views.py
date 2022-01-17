@@ -16,4 +16,4 @@ def reverse_geocode_postcodes_batch(request):
 
         return JsonResponse({"ok": True, "geolocations": result.json()})
 
-    return HttpResponse("Bad request", code=400)
+    return HttpResponse("Bad request", status=400)
