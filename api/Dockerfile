@@ -19,6 +19,8 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/django_api
 
+VOLUME ["/app/django_api/db"]
+
 EXPOSE 8000
 
 CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000
