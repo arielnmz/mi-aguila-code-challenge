@@ -16,7 +16,7 @@ invoke test
 Or by starting the appropriate docker compose service
 
 ```bash
-docker-compose run --rm test
+docker-compose run --rm api python manage.py test
 ```
 
 ## Deployment
