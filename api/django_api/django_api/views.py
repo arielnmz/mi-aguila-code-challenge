@@ -4,6 +4,7 @@ from itertools import islice
 from pathlib import Path
 
 from django.http import HttpResponse
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from django_api.forms import CsvUploadForm
@@ -57,7 +58,7 @@ def request_postcodes_from_csv(request):
                     }
 
                     result = requests.post(
-                        "http://localhost:8001/postcodes/reverse_geocode_postcodes_batch/",
+                        f"{settings.POSTCODES_SERVICE_URL}/postcodes/reverse_geocode_postcodes_batch/",
                         json=payload,
                     )
 
