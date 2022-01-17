@@ -2,5 +2,11 @@ version: '3.8'
 services:
   api:
     build: api
+    environment:
+      - POSTCODES_SERVICE_URL=http://postcodes:8001
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api/django_api/db.sqlite3:/app/django_api/db.sqlite3
   postcodes:
     build: postcodes

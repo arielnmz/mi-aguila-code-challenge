@@ -10,6 +10,15 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
+COPY django_api django_api
+
 FROM base as prod
 
-RUN exit 1
+ENV PYTHONPATH="/app/django_api:${PYTHONPATH}"
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app/django_api
+
+EXPOSE 8000
+
+CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000

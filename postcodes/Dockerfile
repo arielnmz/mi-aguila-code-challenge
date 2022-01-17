@@ -10,6 +10,15 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
+COPY django_postcodes django_postcodes
+
 FROM base as prod
 
-RUN exit 1
+ENV PYTHONPATH="/app/django_postcodes:${PYTHONPATH}"
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app/django_postcodes
+
+EXPOSE 8001
+
+CMD python manage.py runserver 0.0.0.0:8001
