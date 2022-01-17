@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django_api.forms import CsvUploadForm
 
+# Cross-application model usage is discouraged but we aim for simplicity for now
+from postcodes_store.models import Postcode
 
 GEOCODE_CHUNK_SIZE = 10
 
@@ -60,7 +62,16 @@ def request_postcodes_from_csv(request):
                     )
 
                     if result.ok:
-                        pass
+                        # Process resulting geolocations and store in the DB
+                        postcodes_result = result.json()
+                        for geolocation in postcodes_result["geolocations"]:
+                            postcode = Postcode(
+                                key=geolocation["id"],
+                                ok=geolocation["ok"],
+                                geocoded=geolocation["geocoded"],
+                            )
+                            postcode.save()
+
                     else:
                         return HttpResponse(
                             f"There were some errors during processing of the CSV. Code: {result.status_code}"
