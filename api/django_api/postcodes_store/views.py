@@ -1,12 +1,12 @@
-import csv, requests
-
-from itertools import islice
+import csv
+import requests
 from pathlib import Path
 
-from django.http import HttpResponse
 from django.conf import settings
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from postcodes_store.api_tools import get_geolocations_gen
 from django_api.forms import CsvUploadForm
 
 # Cross-application model usage is discouraged but we aim for simplicity for now
@@ -37,13 +37,11 @@ def request_postcodes_from_csv(request):
                 # Process the contents of the CSV in chunks of GEOCODE_CHUNK_SIZE geolocations to improve efficiency
 
                 # First create a generator that returns chunks of GEOCODE_CHUNK_SIZE geolocations
-                def _geolocations_gen():
-                    rows = islice(csv_reader, GEOCODE_CHUNK_SIZE)
-                    yield [(lat, lon) for lat, lon in rows]
+                _geolocations_gen = get_geolocations_gen(csv_reader, GEOCODE_CHUNK_SIZE)
 
                 # Continuously take from the geolocations generator until the data source is exhausted
                 while True:
-                    geolocations = next(_geolocations_gen())
+                    geolocations = next(_geolocations_gen)
 
                     # End loop if the geolocations source is exhausted
                     if not geolocations:
